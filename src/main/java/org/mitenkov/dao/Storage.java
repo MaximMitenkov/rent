@@ -13,12 +13,12 @@ public class Storage {
         rentalPoints.forEach(a -> this.rentalPoints.put(counter++, a));
     }
 
-    public RentalPoint getRentalPointById(int index) {
-        return rentalPoints.get(index);
+    public Optional<RentalPoint> getRentalPointById(int index) {
+        return Optional.ofNullable(rentalPoints.get(index));
     }
 
     //TODO нужно убрать из DAO всё, кроме операций с данными
-    public void showPresentation() {
-        rentalPoints.forEach((a, b) -> b.showAddress(a));
+    public Optional<Map<Integer, RentalPoint>> getRentalPoints() {
+        return Optional.of(rentalPoints);
     }
 }

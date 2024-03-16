@@ -5,6 +5,7 @@ import net.datafaker.Faker;
 import org.mitenkov.entity.RentalPoint;
 import org.mitenkov.entity.VehicleList;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Menu {
@@ -96,11 +97,15 @@ public class Menu {
 
     private RentalPoint chooseRentalPoint() {
         System.out.println("Выберите ближайшую к вам точку аренды, чтобы посмотреть доступный транспорт");
-        storage.showPresentation();
+        storage.getRentalPoints().ifPresent(i -> {
+                i.forEach((a, b) -> b.showAddress(a));
+        });
+
         Scanner in = new Scanner(System.in);
         int i = Integer.parseInt(in.nextLine());
-        vehicles = storage.getRentalPointById(i).getVehicles();
+
+        storage.getRentalPointById(i).ifPresent(point -> vehicles = point.getVehicles());
         vehicleManager.setVehicles(vehicles);
-        return storage.getRentalPointById(i);
+        return storage.getRentalPointById(i).orElseThrow();
     }
 }
