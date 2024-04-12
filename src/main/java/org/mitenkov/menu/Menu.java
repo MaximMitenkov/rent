@@ -4,10 +4,14 @@ import org.mitenkov.dao.Storage;
 import net.datafaker.Faker;
 import org.mitenkov.entity.RentalPoint;
 import org.mitenkov.entity.VehicleList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
 public class Menu {
+
+    public static final Logger log = LoggerFactory.getLogger(Menu.class);
 
     protected static final String INPUT_DATE_FORMAT = "dd MM yyyy";
     protected static final String OUTPUT_DATE_FORMAT = "dd-MM-yyyy";
@@ -47,6 +51,7 @@ public class Menu {
                     3) Показать список доступных автомобилей для поездки
                     4) Обновить данные о поездке
                     5) Взять автомобиль в аренду на определенное время
+                    6) Выбор другой точки
                     
                     0) Выйти из программы
                     """);
@@ -54,27 +59,32 @@ public class Menu {
 
             int choice = Integer.parseInt(in.nextLine());
 
-            switch (choice) {
-                case 1 -> {
-                    vehicles.showWithId();
-                    in.nextLine();
+            try {
+                switch (choice) {
+                    case 1 -> {
+                        vehicles.showWithId();
+                        in.nextLine();
+                    }
+                    case 2 -> {
+                        vehicles.printBestVariant(numberOfPassengers, budget, distance);
+                        System.out.println();
+                    }
+                    case 3 -> {
+                        vehicles.show(vehicles.sortPossibleVehicles(numberOfPassengers, budget, distance));
+                        in.nextLine();
+                    }
+                    case 4 -> {
+                        fillInTravelData();
+                        in.nextLine();
+                    }
+                    case 5 -> vehicleManager.holdVehicle(vehicleManager.chooseVehicle()
+                            .orElseThrow(ArrayIndexOutOfBoundsException::new));
+                    case 6 -> vehicles = chooseRentalPoint().getVehicles();
+                    case 0 -> doCycle = false;
+                    default -> System.out.println("You entered incorrect number");
                 }
-                case 2 -> {
-                    vehicles.printBestVariant(numberOfPassengers, budget, distance);
-                    System.out.println();
-                }
-                case 3 -> {
-                    vehicles.show(vehicles.sortPossibleVehicles(numberOfPassengers, budget, distance));
-                    in.nextLine();
-                }
-                case 4 -> {
-                    fillInTravelData();
-                    in.nextLine();
-                }
-                case 5 -> vehicleManager.holdVehicle(vehicleManager.chooseVehicle());
-                case 6 -> vehicles = chooseRentalPoint().getVehicles();
-                case 0 -> doCycle = false;
-                default -> System.out.println("You entered incorrect number");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                log.error("Invalid input", e);
             }
         }
     }
@@ -97,9 +107,7 @@ public class Menu {
 
     private RentalPoint chooseRentalPoint() {
         System.out.println("Выберите ближайшую к вам точку аренды, чтобы посмотреть доступный транспорт");
-        storage.getRentalPoints().ifPresent(i -> {
-                i.forEach((a, b) -> b.showAddress(a));
-        });
+        storage.getRentalPoints().ifPresent(i -> i.forEach((a, b) -> b.showAddress(a)));
 
         Scanner in = new Scanner(System.in);
         int i = Integer.parseInt(in.nextLine());

@@ -1,17 +1,23 @@
 package org.mitenkov.menu;
 
+import org.mitenkov.Main;
 import org.mitenkov.entity.base.Vehicle;
 import org.mitenkov.entity.VehicleList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static org.mitenkov.menu.Menu.INPUT_DATE_FORMAT;
 import static org.mitenkov.menu.Menu.OUTPUT_DATE_FORMAT;
 
 public class VehicleManager {
+
+    private static final Logger log = LoggerFactory.getLogger(VehicleManager.class);
 
     protected VehicleList vehicles;
 
@@ -56,12 +62,18 @@ public class VehicleManager {
         }
     }
 
-    protected Vehicle chooseVehicle() {
+    protected Optional<Vehicle> chooseVehicle() {
         Scanner in = new Scanner(System.in);
         vehicles.showWithId();
         System.out.println("Напишите номер выбранного вами транспорта");
 
-        return vehicles.getVehicleById(Integer.parseInt(in.nextLine()));
+        try {
+            return Optional.ofNullable(vehicles.getVehicleById(Integer.parseInt(in.nextLine())));
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            log.error("Picked number out of bounds", e);
+            return Optional.empty();
+        }
     }
 
     public void setVehicles(VehicleList vehicles) {

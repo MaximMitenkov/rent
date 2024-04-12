@@ -3,8 +3,6 @@ package org.mitenkov.entity;
 import org.mitenkov.entity.base.Vehicle;
 import net.datafaker.Faker;
 
-import java.util.Random;
-
 public class RentalPoint {
 
     private final String address;
@@ -17,7 +15,6 @@ public class RentalPoint {
 
     public RentalPoint() {
         Faker faker = new Faker();
-        Random random = new Random();
         this.address = faker.address().fullAddress();
         this.vehicles = new VehicleList();
     }
