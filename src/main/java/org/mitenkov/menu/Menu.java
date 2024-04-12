@@ -5,7 +5,6 @@ import net.datafaker.Faker;
 import org.mitenkov.entity.RentalPoint;
 import org.mitenkov.entity.VehicleList;
 
-import java.util.Optional;
 import java.util.Scanner;
 
 public class Menu {
@@ -75,6 +74,7 @@ public class Menu {
                 case 5 -> vehicleManager.holdVehicle(vehicleManager.chooseVehicle());
                 case 6 -> vehicles = chooseRentalPoint().getVehicles();
                 case 0 -> doCycle = false;
+                default -> System.out.println("You entered incorrect number");
             }
         }
     }
